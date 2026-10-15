@@ -68,6 +68,8 @@ app.add_middleware(
 
 
 @app.get("/api/health", response_model=HealthResponse, tags=["System Health"])
+@app.get("/health", response_model=HealthResponse, tags=["System Health"])
+@app.get("/", response_model=HealthResponse, tags=["System Health"])
 def get_health() -> HealthResponse:
     """Returns runtime health status and model availability."""
     model_loaded = prediction_service.model is not None

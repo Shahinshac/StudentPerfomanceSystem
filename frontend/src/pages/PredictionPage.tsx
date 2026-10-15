@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Calculator,
   RotateCcw,
   Sparkles,
   AlertTriangle,
+  AlertCircle,
   HelpCircle,
   TrendingUp,
   ShieldCheck,
@@ -34,8 +35,35 @@ export const PredictionPage: React.FC<PredictionPageProps> = ({
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
+  // String states for natural keyboard typing, backspacing, and decimal entry
+  const [g1Text, setG1Text] = useState<string>(formData.G1_scaled.toString());
+  const [g2Text, setG2Text] = useState<string>(formData.G2_scaled.toString());
+  const [absencesText, setAbsencesText] = useState<string>(formData.absences.toString());
+
+  // Granular validation errors per input field
+  const [g1Error, setG1Error] = useState<string | null>(null);
+  const [g2Error, setG2Error] = useState<string | null>(null);
+  const [absencesError, setAbsencesError] = useState<string | null>(null);
+
+  // Synchronize string inputs when formData updates externally (e.g., preset buttons)
+  useEffect(() => {
+    setG1Text(formData.G1_scaled.toString());
+    setG1Error(null);
+  }, [formData.G1_scaled]);
+
+  useEffect(() => {
+    setG2Text(formData.G2_scaled.toString());
+    setG2Error(null);
+  }, [formData.G2_scaled]);
+
+  useEffect(() => {
+    setAbsencesText(formData.absences.toString());
+    setAbsencesError(null);
+  }, [formData.absences]);
+
   // Quick demonstration presets
   const applyPreset = (presetType: 'high' | 'average' | 'risk') => {
+    setError(null);
     if (presetType === 'high') {
       setFormData({
         G1_scaled: 51.0,
@@ -73,19 +101,134 @@ export const PredictionPage: React.FC<PredictionPageProps> = ({
     }));
   };
 
+  const handleG1Change = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value;
+    setG1Text(raw);
+
+    if (raw.trim() === '') {
+      setG1Error('First-period marks are required (0.0 – 60.0).');
+      return;
+    }
+    const val = parseFloat(raw);
+    if (isNaN(val)) {
+      setG1Error('Please enter a valid numeric mark.');
+      return;
+    }
+    if (val < 0.0 || val > 60.0) {
+      setG1Error(`Marks must be between 0.0 and 60.0 (entered: ${val}).`);
+      return;
+    }
+    setG1Error(null);
+    setFormData((prev) => ({ ...prev, G1_scaled: val }));
+  };
+
+  const handleG1Blur = () => {
+    if (g1Text.trim() === '' || isNaN(parseFloat(g1Text))) {
+      setG1Text(formData.G1_scaled.toString());
+      setG1Error(null);
+    } else {
+      const val = parseFloat(g1Text);
+      const clamped = Math.max(0, Math.min(60, val));
+      setG1Text(clamped.toString());
+      setG1Error(null);
+      setFormData((prev) => ({ ...prev, G1_scaled: clamped }));
+    }
+  };
+
+  const handleG2Change = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value;
+    setG2Text(raw);
+
+    if (raw.trim() === '') {
+      setG2Error('Second-period marks are required (0.0 – 60.0).');
+      return;
+    }
+    const val = parseFloat(raw);
+    if (isNaN(val)) {
+      setG2Error('Please enter a valid numeric mark.');
+      return;
+    }
+    if (val < 0.0 || val > 60.0) {
+      setG2Error(`Marks must be between 0.0 and 60.0 (entered: ${val}).`);
+      return;
+    }
+    setG2Error(null);
+    setFormData((prev) => ({ ...prev, G2_scaled: val }));
+  };
+
+  const handleG2Blur = () => {
+    if (g2Text.trim() === '' || isNaN(parseFloat(g2Text))) {
+      setG2Text(formData.G2_scaled.toString());
+      setG2Error(null);
+    } else {
+      const val = parseFloat(g2Text);
+      const clamped = Math.max(0, Math.min(60, val));
+      setG2Text(clamped.toString());
+      setG2Error(null);
+      setFormData((prev) => ({ ...prev, G2_scaled: clamped }));
+    }
+  };
+
+  const handleAbsencesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value;
+    setAbsencesText(raw);
+
+    if (raw.trim() === '') {
+      setAbsencesError('Absences are required (0 – 50 days).');
+      return;
+    }
+    const val = parseInt(raw, 10);
+    if (isNaN(val)) {
+      setAbsencesError('Please enter a valid whole number.');
+      return;
+    }
+    if (val < 0 || val > 50) {
+      setAbsencesError(`Absences must be between 0 and 50 days (entered: ${val}).`);
+      return;
+    }
+    setAbsencesError(null);
+    setFormData((prev) => ({ ...prev, absences: val }));
+  };
+
+  const handleAbsencesBlur = () => {
+    if (absencesText.trim() === '' || isNaN(parseInt(absencesText, 10))) {
+      setAbsencesText(formData.absences.toString());
+      setAbsencesError(null);
+    } else {
+      const val = parseInt(absencesText, 10);
+      const clamped = Math.max(0, Math.min(50, val));
+      setAbsencesText(clamped.toString());
+      setAbsencesError(null);
+      setFormData((prev) => ({ ...prev, absences: clamped }));
+    }
+  };
+
+  const hasValidationErrors = Boolean(
+    g1Error ||
+    g2Error ||
+    absencesError ||
+    !g1Text.trim() ||
+    !g2Text.trim() ||
+    !absencesText.trim()
+  );
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (hasValidationErrors) {
+      setError('Please resolve all field validation errors before forecasting.');
+      return;
+    }
     setLoading(true);
     setError(null);
 
-    // Validation
+    // Validation checks against schema
     if (formData.G1_scaled < 0 || formData.G1_scaled > 60) {
-      setError('First-period marks (G1) must be between 0 and 60.');
+      setError('First-period marks (G1) must be between 0.0 and 60.0.');
       setLoading(false);
       return;
     }
     if (formData.G2_scaled < 0 || formData.G2_scaled > 60) {
-      setError('Second-period marks (G2) must be between 0 and 60.');
+      setError('Second-period marks (G2) must be between 0.0 and 60.0.');
       setLoading(false);
       return;
     }
@@ -122,7 +265,7 @@ export const PredictionPage: React.FC<PredictionPageProps> = ({
           Predict Academic Performance
         </h2>
         <p className="text-sm text-slate-400 mt-1">
-          Estimate final examination marks on the 0–60 scale and provisional letter grades (A–F) based on student academic habits and assessment records.
+          Enter examination marks and academic habits directly into numeric fields to estimate final marks on the 0.0–60.0 scale and provisional letter grades (A–F).
         </p>
       </div>
 
@@ -136,21 +279,21 @@ export const PredictionPage: React.FC<PredictionPageProps> = ({
           <button
             type="button"
             onClick={() => applyPreset('high')}
-            className="px-3.5 py-1.5 text-xs font-semibold rounded-xl bg-emerald-950/70 text-emerald-300 border border-emerald-800/80 hover:bg-emerald-900/60 transition-all shadow-sm"
+            className="px-3.5 py-1.5 text-xs font-semibold rounded-xl bg-emerald-950/70 text-emerald-300 border border-emerald-800/80 hover:bg-emerald-900/60 transition-all shadow-sm cursor-pointer"
           >
             🌟 Honors Profile (Grade A)
           </button>
           <button
             type="button"
             onClick={() => applyPreset('average')}
-            className="px-3.5 py-1.5 text-xs font-semibold rounded-xl bg-blue-950/70 text-blue-300 border border-blue-800/80 hover:bg-blue-900/60 transition-all shadow-sm"
+            className="px-3.5 py-1.5 text-xs font-semibold rounded-xl bg-blue-950/70 text-blue-300 border border-blue-800/80 hover:bg-blue-900/60 transition-all shadow-sm cursor-pointer"
           >
             📘 Steady Profile (Grade C/B)
           </button>
           <button
             type="button"
             onClick={() => applyPreset('risk')}
-            className="px-3.5 py-1.5 text-xs font-semibold rounded-xl bg-rose-950/70 text-rose-300 border border-rose-800/80 hover:bg-rose-900/60 transition-all shadow-sm"
+            className="px-3.5 py-1.5 text-xs font-semibold rounded-xl bg-rose-950/70 text-rose-300 border border-rose-800/80 hover:bg-rose-900/60 transition-all shadow-sm cursor-pointer"
           >
             ⚠️ Needs Support (Grade F)
           </button>
@@ -159,77 +302,103 @@ export const PredictionPage: React.FC<PredictionPageProps> = ({
 
       {/* Form & Results Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Compact Academic Input Form */}
+        {/* Direct Numeric Input Form */}
         <div className="lg:col-span-6 bg-slate-900 rounded-2xl border border-slate-800 p-6 shadow-xl space-y-6">
           <div className="flex items-center justify-between border-b border-slate-800 pb-3">
             <h3 className="text-base font-bold text-white flex items-center space-x-2">
               <Calculator className="w-5 h-5 text-primary-400" />
               <span>Student Parameters</span>
             </h3>
-            <span className="text-xs text-slate-400 font-mono">0–60 Scale</span>
+            <span className="text-xs text-primary-400 font-mono font-semibold bg-primary-950/60 px-2 py-0.5 rounded border border-primary-800/50">
+              0.0–60.0 Marks Scale
+            </span>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
-            {/* 1. G1_scaled */}
-            <div className="space-y-2">
+            {/* 1. G1_scaled - Direct Numeric Input */}
+            <div className="space-y-1.5">
               <div className="flex justify-between items-center text-xs">
-                <label className="font-semibold text-slate-200">First-Period Marks (G1)</label>
-                <div className="flex items-center space-x-1.5">
-                  <input
-                    type="number"
-                    min="0"
-                    max="60"
-                    step="0.5"
-                    value={formData.G1_scaled}
-                    onChange={(e) => handleInputChange('G1_scaled', Math.min(60, Math.max(0, parseFloat(e.target.value) || 0)))}
-                    className="w-16 px-2 py-1 text-right text-xs font-mono font-bold text-white bg-slate-950 border border-slate-700 rounded-lg focus:border-primary-500 focus:outline-none"
-                  />
-                  <span className="text-slate-400 font-medium">/ 60</span>
-                </div>
+                <label htmlFor="g1-input" className="font-semibold text-slate-200">
+                  First-Period Exam Marks (G1)
+                </label>
+                <span className="text-slate-400 font-mono text-[11px]">
+                  Unit: <span className="text-slate-300 font-semibold">Marks (out of 60.0)</span>
+                </span>
               </div>
-              <input
-                type="range"
-                min="0"
-                max="60"
-                step="0.5"
-                value={formData.G1_scaled}
-                onChange={(e) => handleInputChange('G1_scaled', parseFloat(e.target.value))}
-                className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-primary-500"
-              />
-              <p className="text-[11px] text-slate-500">
-                Score in first assessment period (rescaled to 0–60 marks).
-              </p>
+              <div className="relative">
+                <input
+                  id="g1-input"
+                  type="number"
+                  min="0"
+                  max="60"
+                  step="any"
+                  value={g1Text}
+                  onChange={handleG1Change}
+                  onBlur={handleG1Blur}
+                  placeholder="e.g. 36.0"
+                  className={`w-full px-3.5 py-2.5 text-sm font-mono font-bold text-white bg-slate-950 border rounded-xl transition-all focus:outline-none ${
+                    g1Error
+                      ? 'border-rose-500 focus:border-rose-400 focus:ring-1 focus:ring-rose-500 bg-rose-950/10'
+                      : 'border-slate-700 focus:border-primary-500 focus:ring-1 focus:ring-primary-500'
+                  }`}
+                />
+                <span className="absolute right-3.5 top-2.5 text-xs font-mono font-semibold text-slate-500 pointer-events-none">
+                  / 60.0
+                </span>
+              </div>
+              {g1Error ? (
+                <p className="text-xs text-rose-400 flex items-center space-x-1 pt-0.5">
+                  <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                  <span>{g1Error}</span>
+                </p>
+              ) : (
+                <p className="text-[11px] text-slate-500">
+                  Range: 0.0 – 60.0 marks. Decimals allowed (e.g. 36.5). Pass threshold: 30.0.
+                </p>
+              )}
             </div>
 
-            {/* 2. G2_scaled */}
-            <div className="space-y-2">
+            {/* 2. G2_scaled - Direct Numeric Input */}
+            <div className="space-y-1.5">
               <div className="flex justify-between items-center text-xs">
-                <label className="font-semibold text-slate-200">Second-Period Marks (G2)</label>
-                <div className="flex items-center space-x-1.5">
-                  <input
-                    type="number"
-                    min="0"
-                    max="60"
-                    step="0.5"
-                    value={formData.G2_scaled}
-                    onChange={(e) => handleInputChange('G2_scaled', Math.min(60, Math.max(0, parseFloat(e.target.value) || 0)))}
-                    className="w-16 px-2 py-1 text-right text-xs font-mono font-bold text-white bg-slate-950 border border-slate-700 rounded-lg focus:border-primary-500 focus:outline-none"
-                  />
-                  <span className="text-slate-400 font-medium">/ 60</span>
-                </div>
+                <label htmlFor="g2-input" className="font-semibold text-slate-200">
+                  Second-Period Exam Marks (G2 / Midterm)
+                </label>
+                <span className="text-slate-400 font-mono text-[11px]">
+                  Unit: <span className="text-slate-300 font-semibold">Marks (out of 60.0)</span>
+                </span>
               </div>
-              <input
-                type="range"
-                min="0"
-                max="60"
-                step="0.5"
-                value={formData.G2_scaled}
-                onChange={(e) => handleInputChange('G2_scaled', parseFloat(e.target.value))}
-                className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-primary-500"
-              />
-              <p className="text-[11px] text-slate-500">
-                Score in mid-term evaluation (highest statistical correlation with final grade).
-              </p>
+              <div className="relative">
+                <input
+                  id="g2-input"
+                  type="number"
+                  min="0"
+                  max="60"
+                  step="any"
+                  value={g2Text}
+                  onChange={handleG2Change}
+                  onBlur={handleG2Blur}
+                  placeholder="e.g. 39.0"
+                  className={`w-full px-3.5 py-2.5 text-sm font-mono font-bold text-white bg-slate-950 border rounded-xl transition-all focus:outline-none ${
+                    g2Error
+                      ? 'border-rose-500 focus:border-rose-400 focus:ring-1 focus:ring-rose-500 bg-rose-950/10'
+                      : 'border-slate-700 focus:border-primary-500 focus:ring-1 focus:ring-primary-500'
+                  }`}
+                />
+                <span className="absolute right-3.5 top-2.5 text-xs font-mono font-semibold text-slate-500 pointer-events-none">
+                  / 60.0
+                </span>
+              </div>
+              {g2Error ? (
+                <p className="text-xs text-rose-400 flex items-center space-x-1 pt-0.5">
+                  <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                  <span>{g2Error}</span>
+                </p>
+              ) : (
+                <p className="text-[11px] text-slate-500">
+                  Range: 0.0 – 60.0 marks. Decimals allowed. Strongest statistical correlation (r = +0.915).
+                </p>
+              )}
             </div>
 
             {/* 3. Study Time */}
@@ -246,7 +415,7 @@ export const PredictionPage: React.FC<PredictionPageProps> = ({
                     key={opt.value}
                     type="button"
                     onClick={() => handleInputChange('studytime', opt.value)}
-                    className={`py-2 px-2 rounded-xl text-xs font-medium border text-center transition-all ${
+                    className={`py-2 px-2 rounded-xl text-xs font-medium border text-center transition-all cursor-pointer ${
                       formData.studytime === opt.value
                         ? 'bg-primary-600 text-white border-primary-500 shadow-sm font-semibold'
                         : 'bg-slate-950/60 text-slate-300 border-slate-800 hover:border-slate-700'
@@ -272,46 +441,59 @@ export const PredictionPage: React.FC<PredictionPageProps> = ({
                     key={val}
                     type="button"
                     onClick={() => handleInputChange('failures', val)}
-                    className={`py-2 px-2 rounded-xl text-xs font-medium border text-center transition-all ${
+                    className={`py-2 px-2 rounded-xl text-xs font-medium border text-center transition-all cursor-pointer ${
                       formData.failures === val
                         ? 'bg-primary-600 text-white border-primary-500 shadow-sm font-semibold'
                         : 'bg-slate-950/60 text-slate-300 border-slate-800 hover:border-slate-700'
                     }`}
                   >
-                    {val === 3 ? '3+ Failures' : `${val} Past Failures`}
+                    {val === 3 ? '3+ Failures' : `${val} Failures`}
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* 5. Absences */}
-            <div className="space-y-2">
+            {/* 5. Absences - Direct Numeric Input */}
+            <div className="space-y-1.5">
               <div className="flex justify-between items-center text-xs">
-                <label className="font-semibold text-slate-200">School Absences</label>
-                <div className="flex items-center space-x-1.5">
-                  <input
-                    type="number"
-                    min="0"
-                    max="50"
-                    value={formData.absences}
-                    onChange={(e) => handleInputChange('absences', Math.max(0, parseInt(e.target.value, 10) || 0))}
-                    className="w-14 px-2 py-1 text-right text-xs font-mono font-bold text-white bg-slate-950 border border-slate-700 rounded-lg focus:border-primary-500 focus:outline-none"
-                  />
-                  <span className="text-slate-400 font-medium">days</span>
-                </div>
+                <label htmlFor="absences-input" className="font-semibold text-slate-200">
+                  School Absences
+                </label>
+                <span className="text-slate-400 font-mono text-[11px]">
+                  Unit: <span className="text-slate-300 font-semibold">Days missed (0 – 50)</span>
+                </span>
               </div>
-              <input
-                type="range"
-                min="0"
-                max="32"
-                step="1"
-                value={formData.absences}
-                onChange={(e) => handleInputChange('absences', parseInt(e.target.value, 10))}
-                className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-primary-500"
-              />
-              <p className="text-[11px] text-slate-500">
-                Number of missed class days (Cohort baseline average: ~3.7 days).
-              </p>
+              <div className="relative">
+                <input
+                  id="absences-input"
+                  type="number"
+                  min="0"
+                  max="50"
+                  step="1"
+                  value={absencesText}
+                  onChange={handleAbsencesChange}
+                  onBlur={handleAbsencesBlur}
+                  placeholder="e.g. 4"
+                  className={`w-full px-3.5 py-2.5 text-sm font-mono font-bold text-white bg-slate-950 border rounded-xl transition-all focus:outline-none ${
+                    absencesError
+                      ? 'border-rose-500 focus:border-rose-400 focus:ring-1 focus:ring-rose-500 bg-rose-950/10'
+                      : 'border-slate-700 focus:border-primary-500 focus:ring-1 focus:ring-primary-500'
+                  }`}
+                />
+                <span className="absolute right-3.5 top-2.5 text-xs font-mono font-semibold text-slate-500 pointer-events-none">
+                  days
+                </span>
+              </div>
+              {absencesError ? (
+                <p className="text-xs text-rose-400 flex items-center space-x-1 pt-0.5">
+                  <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                  <span>{absencesError}</span>
+                </p>
+              ) : (
+                <p className="text-[11px] text-slate-500">
+                  Total days absent during term (Cohort avg: ~3.7 days. ≥ 15 days flags chronic disengagement).
+                </p>
+              )}
             </div>
 
             {/* 6. Extra Educational Support */}
@@ -328,7 +510,7 @@ export const PredictionPage: React.FC<PredictionPageProps> = ({
                 <button
                   type="button"
                   onClick={() => handleInputChange('schoolsup', 'no')}
-                  className={`px-3 py-1.5 text-xs rounded-lg font-semibold transition-all ${
+                  className={`px-3 py-1.5 text-xs rounded-lg font-semibold transition-all cursor-pointer ${
                     formData.schoolsup === 'no'
                       ? 'bg-slate-800 text-white border border-slate-700'
                       : 'text-slate-500 hover:text-slate-300'
@@ -339,7 +521,7 @@ export const PredictionPage: React.FC<PredictionPageProps> = ({
                 <button
                   type="button"
                   onClick={() => handleInputChange('schoolsup', 'yes')}
-                  className={`px-3 py-1.5 text-xs rounded-lg font-semibold transition-all ${
+                  className={`px-3 py-1.5 text-xs rounded-lg font-semibold transition-all cursor-pointer ${
                     formData.schoolsup === 'yes'
                       ? 'bg-primary-950 text-primary-300 border border-primary-800'
                       : 'text-slate-500 hover:text-slate-300'
@@ -353,8 +535,8 @@ export const PredictionPage: React.FC<PredictionPageProps> = ({
             {/* Prominent Predict Button */}
             <button
               type="submit"
-              disabled={loading}
-              className="w-full py-3.5 px-4 rounded-xl bg-primary-600 hover:bg-primary-500 text-white font-bold text-sm transition-all shadow-lg hover:shadow-primary-600/30 disabled:opacity-50 flex items-center justify-center space-x-2 cursor-pointer"
+              disabled={loading || hasValidationErrors}
+              className="w-full py-3.5 px-4 rounded-xl bg-primary-600 hover:bg-primary-500 text-white font-bold text-sm transition-all shadow-lg hover:shadow-primary-600/30 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 cursor-pointer"
             >
               {loading ? (
                 <>

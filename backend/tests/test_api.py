@@ -19,13 +19,14 @@ client = TestClient(app)
 
 
 def test_health_endpoint():
-    """Verifies that /api/health responds with 200 and reports model loaded."""
-    response = client.get("/api/health")
-    assert response.status_code == 200
-    data = response.json()
-    assert data["status"] == "healthy"
-    assert data["model_loaded"] is True
-    assert "Linear" in data["selected_model"] or "Pipeline" in data["selected_model"]
+    """Verifies that /api/health, /health, and / respond with 200 and report model loaded."""
+    for path in ["/api/health", "/health", "/"]:
+        response = client.get(path)
+        assert response.status_code == 200
+        data = response.json()
+        assert data["status"] == "healthy"
+        assert data["model_loaded"] is True
+        assert "Linear" in data["selected_model"] or "Pipeline" in data["selected_model"]
 
 
 def test_model_metrics_endpoint():
