@@ -4,33 +4,37 @@ import {
   RotateCcw,
   Sparkles,
   AlertTriangle,
-  CheckCircle2,
   HelpCircle,
   TrendingUp,
   ShieldCheck,
   ShieldAlert,
+  ArrowRight,
+  Sliders,
+  Lightbulb,
 } from 'lucide-react';
 import type { AcademicInput, EvaluationStudentResponse } from '../types';
 import { evaluateStudent } from '../services/api';
 import { GradeBadge, PerformanceBadge, RiskBadge } from '../components/Badges';
-import { WhatIfSimulator } from '../components/WhatIfSimulator';
-import { ExplainableCard } from '../components/ExplainableCard';
 
-export const PredictionPage: React.FC = () => {
-  const [formData, setFormData] = useState<AcademicInput>({
-    G1_scaled: 36.0,
-    G2_scaled: 39.0,
-    studytime: 2,
-    failures: 0,
-    absences: 4,
-    schoolsup: 'no',
-  });
+interface PredictionPageProps {
+  formData: AcademicInput;
+  setFormData: React.Dispatch<React.SetStateAction<AcademicInput>>;
+  result: EvaluationStudentResponse | null;
+  setResult: React.Dispatch<React.SetStateAction<EvaluationStudentResponse | null>>;
+  onNavigate: (tab: string) => void;
+}
 
+export const PredictionPage: React.FC<PredictionPageProps> = ({
+  formData,
+  setFormData,
+  result,
+  setResult,
+  onNavigate,
+}) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<EvaluationStudentResponse | null>(null);
 
-  // Viva demonstration presets
+  // Quick demonstration presets
   const applyPreset = (presetType: 'high' | 'average' | 'risk') => {
     if (presetType === 'high') {
       setFormData({
@@ -73,41 +77,60 @@ export const PredictionPage: React.FC = () => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+
+    // Validation
+    if (formData.G1_scaled < 0 || formData.G1_scaled > 60) {
+      setError('First-period marks (G1) must be between 0 and 60.');
+      setLoading(false);
+      return;
+    }
+    if (formData.G2_scaled < 0 || formData.G2_scaled > 60) {
+      setError('Second-period marks (G2) must be between 0 and 60.');
+      setLoading(false);
+      return;
+    }
+    if (formData.absences < 0 || formData.absences > 50) {
+      setError('Absences must be between 0 and 50 days.');
+      setLoading(false);
+      return;
+    }
+
     try {
       const evaluation = await evaluateStudent(formData);
       setResult(evaluation);
     } catch (err: any) {
-      setError(err.message || 'Failed to complete student evaluation');
+      setError(err.message || 'Failed to complete student evaluation. Check backend connection.');
     } finally {
       setLoading(false);
     }
   };
 
-  const studytimeLabels: Record<number, string> = {
-    1: '< 2 hrs/wk',
-    2: '2–5 hrs/wk',
-    3: '5–10 hrs/wk',
-    4: '> 10 hrs/wk',
-  };
+  const studytimeOptions = [
+    { value: 1, label: '< 2 hrs/wk', desc: 'Minimal' },
+    { value: 2, label: '2–5 hrs/wk', desc: 'Moderate' },
+    { value: 3, label: '5–10 hrs/wk', desc: 'Strong' },
+    { value: 4, label: '> 10 hrs/wk', desc: 'Intensive' },
+  ];
+
+  const failureOptions = [0, 1, 2, 3];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 max-w-6xl mx-auto">
       {/* Page Header */}
       <div>
         <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-          Student Performance Prediction & Diagnostic Suite
+          Predict Academic Performance
         </h2>
         <p className="text-sm text-slate-400 mt-1">
-          Machine Learning final marks forecasting (0–60 scale), provisional letter grading (A–F),
-          institutional risk diagnostics, What-If simulation, and transparent feature attribution.
+          Estimate final examination marks on the 0–60 scale and provisional letter grades (A–F) based on student academic habits and assessment records.
         </p>
       </div>
 
-      {/* Preset Demo Bar */}
+      {/* Quick Demonstration Presets */}
       <div className="bg-slate-900 rounded-2xl p-4 border border-slate-800 flex flex-wrap items-center justify-between gap-3 shadow-lg">
         <div className="flex items-center space-x-2 text-xs font-semibold text-slate-300">
           <Sparkles className="w-4 h-4 text-primary-400" />
-          <span>Viva Demonstration Presets:</span>
+          <span>Quick Sample Profiles:</span>
         </div>
         <div className="flex flex-wrap gap-2">
           <button
@@ -115,133 +138,167 @@ export const PredictionPage: React.FC = () => {
             onClick={() => applyPreset('high')}
             className="px-3.5 py-1.5 text-xs font-semibold rounded-xl bg-emerald-950/70 text-emerald-300 border border-emerald-800/80 hover:bg-emerald-900/60 transition-all shadow-sm"
           >
-            🌟 Top Honors Profile (Grade A)
+            🌟 Honors Profile (Grade A)
           </button>
           <button
             type="button"
             onClick={() => applyPreset('average')}
             className="px-3.5 py-1.5 text-xs font-semibold rounded-xl bg-blue-950/70 text-blue-300 border border-blue-800/80 hover:bg-blue-900/60 transition-all shadow-sm"
           >
-            📘 Average Steady Profile (Grade C/B)
+            📘 Steady Profile (Grade C/B)
           </button>
           <button
             type="button"
             onClick={() => applyPreset('risk')}
             className="px-3.5 py-1.5 text-xs font-semibold rounded-xl bg-rose-950/70 text-rose-300 border border-rose-800/80 hover:bg-rose-900/60 transition-all shadow-sm"
           >
-            ⚠️ High-Risk Profile (Grade F)
+            ⚠️ Needs Support (Grade F)
           </button>
         </div>
       </div>
 
-      {/* Main Form & Results Grid */}
+      {/* Form & Results Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Academic Input Form */}
+        {/* Compact Academic Input Form */}
         <div className="lg:col-span-6 bg-slate-900 rounded-2xl border border-slate-800 p-6 shadow-xl space-y-6">
           <div className="flex items-center justify-between border-b border-slate-800 pb-3">
             <h3 className="text-base font-bold text-white flex items-center space-x-2">
               <Calculator className="w-5 h-5 text-primary-400" />
-              <span>Academic Parameters (UCI Features)</span>
+              <span>Student Parameters</span>
             </h3>
-            <span className="text-xs text-slate-400">Scale 0–60 Marks</span>
+            <span className="text-xs text-slate-400 font-mono">0–60 Scale</span>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
             {/* 1. G1_scaled */}
-            <div className="space-y-1.5">
-              <div className="flex justify-between text-xs">
-                <label className="font-semibold text-slate-300">First-Period Marks (G1)</label>
-                <span className="font-mono text-primary-400 font-bold text-sm">
-                  {formData.G1_scaled.toFixed(1)} / 60.0
-                </span>
+            <div className="space-y-2">
+              <div className="flex justify-between items-center text-xs">
+                <label className="font-semibold text-slate-200">First-Period Marks (G1)</label>
+                <div className="flex items-center space-x-1.5">
+                  <input
+                    type="number"
+                    min="0"
+                    max="60"
+                    step="0.5"
+                    value={formData.G1_scaled}
+                    onChange={(e) => handleInputChange('G1_scaled', Math.min(60, Math.max(0, parseFloat(e.target.value) || 0)))}
+                    className="w-16 px-2 py-1 text-right text-xs font-mono font-bold text-white bg-slate-950 border border-slate-700 rounded-lg focus:border-primary-500 focus:outline-none"
+                  />
+                  <span className="text-slate-400 font-medium">/ 60</span>
+                </div>
               </div>
               <input
                 type="range"
                 min="0"
                 max="60"
-                step="1"
+                step="0.5"
                 value={formData.G1_scaled}
                 onChange={(e) => handleInputChange('G1_scaled', parseFloat(e.target.value))}
-                className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-primary-500"
+                className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-primary-500"
               />
               <p className="text-[11px] text-slate-500">
-                First trimester formal assessment marks (original G1 x 3)
+                Score in first assessment period (rescaled to 0–60 marks).
               </p>
             </div>
 
             {/* 2. G2_scaled */}
-            <div className="space-y-1.5">
-              <div className="flex justify-between text-xs">
-                <label className="font-semibold text-slate-300">Second-Period Marks (G2)</label>
-                <span className="font-mono text-primary-400 font-bold text-sm">
-                  {formData.G2_scaled.toFixed(1)} / 60.0
-                </span>
+            <div className="space-y-2">
+              <div className="flex justify-between items-center text-xs">
+                <label className="font-semibold text-slate-200">Second-Period Marks (G2)</label>
+                <div className="flex items-center space-x-1.5">
+                  <input
+                    type="number"
+                    min="0"
+                    max="60"
+                    step="0.5"
+                    value={formData.G2_scaled}
+                    onChange={(e) => handleInputChange('G2_scaled', Math.min(60, Math.max(0, parseFloat(e.target.value) || 0)))}
+                    className="w-16 px-2 py-1 text-right text-xs font-mono font-bold text-white bg-slate-950 border border-slate-700 rounded-lg focus:border-primary-500 focus:outline-none"
+                  />
+                  <span className="text-slate-400 font-medium">/ 60</span>
+                </div>
               </div>
               <input
                 type="range"
                 min="0"
                 max="60"
-                step="1"
+                step="0.5"
                 value={formData.G2_scaled}
                 onChange={(e) => handleInputChange('G2_scaled', parseFloat(e.target.value))}
-                className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-primary-500"
+                className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-primary-500"
               />
               <p className="text-[11px] text-slate-500">
-                Mid-term evaluation score (original G2 x 3, r = +0.919 with final marks)
+                Score in mid-term evaluation (highest statistical correlation with final grade).
               </p>
             </div>
 
             {/* 3. Study Time */}
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               <div className="flex justify-between text-xs">
-                <label className="font-semibold text-slate-300">Weekly Study Time</label>
-                <span className="font-mono text-primary-400 font-bold text-sm">
-                  {studytimeLabels[formData.studytime] || formData.studytime}
+                <label className="font-semibold text-slate-200">Weekly Study Commitment</label>
+                <span className="font-mono text-primary-400 font-bold text-xs">
+                  {studytimeOptions.find((o) => o.value === formData.studytime)?.label}
                 </span>
               </div>
-              <input
-                type="range"
-                min="1"
-                max="4"
-                step="1"
-                value={formData.studytime}
-                onChange={(e) => handleInputChange('studytime', parseInt(e.target.value, 10))}
-                className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-primary-500"
-              />
-              <p className="text-[11px] text-slate-500">
-                1: &lt; 2h, 2: 2–5h, 3: 5–10h, 4: &gt; 10h weekly study commitment
-              </p>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {studytimeOptions.map((opt) => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => handleInputChange('studytime', opt.value)}
+                    className={`py-2 px-2 rounded-xl text-xs font-medium border text-center transition-all ${
+                      formData.studytime === opt.value
+                        ? 'bg-primary-600 text-white border-primary-500 shadow-sm font-semibold'
+                        : 'bg-slate-950/60 text-slate-300 border-slate-800 hover:border-slate-700'
+                    }`}
+                  >
+                    <div className="leading-tight">{opt.label}</div>
+                  </button>
+                ))}
+              </div>
             </div>
 
             {/* 4. Past Failures */}
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               <div className="flex justify-between text-xs">
-                <label className="font-semibold text-slate-300">Past Class Failures</label>
-                <span className="font-mono text-primary-400 font-bold text-sm">
+                <label className="font-semibold text-slate-200">Past Class Failures</label>
+                <span className="font-mono text-primary-400 font-bold text-xs">
                   {formData.failures} {formData.failures === 1 ? 'failure' : 'failures'}
                 </span>
               </div>
-              <input
-                type="range"
-                min="0"
-                max="3"
-                step="1"
-                value={formData.failures}
-                onChange={(e) => handleInputChange('failures', parseInt(e.target.value, 10))}
-                className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-primary-500"
-              />
-              <p className="text-[11px] text-slate-500">
-                Number of previous course failures on academic record (0 to 3+)
-              </p>
+              <div className="grid grid-cols-4 gap-2">
+                {failureOptions.map((val) => (
+                  <button
+                    key={val}
+                    type="button"
+                    onClick={() => handleInputChange('failures', val)}
+                    className={`py-2 px-2 rounded-xl text-xs font-medium border text-center transition-all ${
+                      formData.failures === val
+                        ? 'bg-primary-600 text-white border-primary-500 shadow-sm font-semibold'
+                        : 'bg-slate-950/60 text-slate-300 border-slate-800 hover:border-slate-700'
+                    }`}
+                  >
+                    {val === 3 ? '3+ Failures' : `${val} Past Failures`}
+                  </button>
+                ))}
+              </div>
             </div>
 
             {/* 5. Absences */}
-            <div className="space-y-1.5">
-              <div className="flex justify-between text-xs">
-                <label className="font-semibold text-slate-300">School Absences</label>
-                <span className="font-mono text-primary-400 font-bold text-sm">
-                  {formData.absences} days
-                </span>
+            <div className="space-y-2">
+              <div className="flex justify-between items-center text-xs">
+                <label className="font-semibold text-slate-200">School Absences</label>
+                <div className="flex items-center space-x-1.5">
+                  <input
+                    type="number"
+                    min="0"
+                    max="50"
+                    value={formData.absences}
+                    onChange={(e) => handleInputChange('absences', Math.max(0, parseInt(e.target.value, 10) || 0))}
+                    className="w-14 px-2 py-1 text-right text-xs font-mono font-bold text-white bg-slate-950 border border-slate-700 rounded-lg focus:border-primary-500 focus:outline-none"
+                  />
+                  <span className="text-slate-400 font-medium">days</span>
+                </div>
               </div>
               <input
                 type="range"
@@ -250,28 +307,28 @@ export const PredictionPage: React.FC = () => {
                 step="1"
                 value={formData.absences}
                 onChange={(e) => handleInputChange('absences', parseInt(e.target.value, 10))}
-                className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-primary-500"
+                className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-primary-500"
               />
               <p className="text-[11px] text-slate-500">
-                Cumulative days absent during the academic term (Cohort avg: 3.7 days)
+                Number of missed class days (Cohort baseline average: ~3.7 days).
               </p>
             </div>
 
-            {/* 6. Extra Support Toggle */}
+            {/* 6. Extra Educational Support */}
             <div className="bg-slate-950/60 rounded-xl p-3 border border-slate-800 flex items-center justify-between">
               <div>
-                <span className="text-xs font-semibold text-slate-300 block">
-                  Extra Educational Support (schoolsup)
+                <span className="text-xs font-semibold text-slate-200 block">
+                  Extra Educational Support
                 </span>
                 <span className="text-[11px] text-slate-500">
-                  Institutional remedial or tutoring enrollment
+                  Institutional tutoring or remedial assistance
                 </span>
               </div>
               <div className="flex items-center space-x-1.5">
                 <button
                   type="button"
                   onClick={() => handleInputChange('schoolsup', 'no')}
-                  className={`px-3 py-1 text-xs rounded-lg font-semibold transition-all ${
+                  className={`px-3 py-1.5 text-xs rounded-lg font-semibold transition-all ${
                     formData.schoolsup === 'no'
                       ? 'bg-slate-800 text-white border border-slate-700'
                       : 'text-slate-500 hover:text-slate-300'
@@ -282,7 +339,7 @@ export const PredictionPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => handleInputChange('schoolsup', 'yes')}
-                  className={`px-3 py-1 text-xs rounded-lg font-semibold transition-all ${
+                  className={`px-3 py-1.5 text-xs rounded-lg font-semibold transition-all ${
                     formData.schoolsup === 'yes'
                       ? 'bg-primary-950 text-primary-300 border border-primary-800'
                       : 'text-slate-500 hover:text-slate-300'
@@ -293,20 +350,21 @@ export const PredictionPage: React.FC = () => {
               </div>
             </div>
 
+            {/* Prominent Predict Button */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 px-4 rounded-xl bg-primary-600 hover:bg-primary-500 text-white font-semibold text-sm transition-all shadow-md disabled:opacity-50 flex items-center justify-center space-x-2"
+              className="w-full py-3.5 px-4 rounded-xl bg-primary-600 hover:bg-primary-500 text-white font-bold text-sm transition-all shadow-lg hover:shadow-primary-600/30 disabled:opacity-50 flex items-center justify-center space-x-2 cursor-pointer"
             >
               {loading ? (
                 <>
                   <RotateCcw className="w-4 h-4 animate-spin" />
-                  <span>Evaluating Machine Learning Model...</span>
+                  <span>Calculating Prediction...</span>
                 </>
               ) : (
                 <>
                   <TrendingUp className="w-4 h-4" />
-                  <span>Execute Performance Assessment</span>
+                  <span>Predict Final Grade</span>
                 </>
               )}
             </button>
@@ -324,24 +382,19 @@ export const PredictionPage: React.FC = () => {
         <div className="lg:col-span-6 space-y-6">
           {result ? (
             <div className="bg-slate-900 rounded-2xl border border-slate-800 p-6 shadow-xl space-y-6">
-              {/* Header Tiers */}
+              {/* Header Badges */}
               <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-4">
                 <div>
                   <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                    Prediction Target
+                    Forecast Result
                   </span>
-                  <h4 className="text-lg font-bold text-white">Final Examination Forecast</h4>
+                  <h4 className="text-lg font-bold text-white">Final Exam Projection</h4>
                 </div>
                 <div className="flex items-center space-x-2">
                   <GradeBadge grade={result.prediction.letter_grade} size="md" />
                   <PerformanceBadge
                     category={result.prediction.performance_category}
                     percentage={result.prediction.performance_percentage}
-                    size="md"
-                  />
-                  <RiskBadge
-                    level={result.risk.risk_level}
-                    flagsCount={result.risk.risk_flags_count}
                     size="md"
                   />
                 </div>
@@ -351,27 +404,27 @@ export const PredictionPage: React.FC = () => {
               <div className="p-6 rounded-2xl bg-slate-950 border border-slate-800/80 text-white flex items-center justify-between shadow-inner">
                 <div>
                   <span className="text-xs uppercase tracking-wider text-slate-400 font-semibold">
-                    Predicted Final Exam Score
+                    Predicted Final Score
                   </span>
                   <div className="flex items-baseline space-x-2 mt-1">
                     <span className="text-4xl sm:text-5xl font-black text-white">
                       {result.prediction.predicted_final_marks.toFixed(1)}
                     </span>
-                    <span className="text-slate-400 text-lg font-medium">/ 60.0 Marks</span>
+                    <span className="text-slate-400 text-lg font-medium">/ 60.0</span>
                   </div>
                   <p className="text-xs text-primary-400 mt-2 font-medium">
-                    Model: {result.prediction.model_used}
+                    Provisional Grade: {result.prediction.letter_grade} ({result.prediction.performance_category})
                   </p>
                 </div>
                 <div className="text-right">
                   <span className="text-3xl sm:text-4xl font-extrabold text-primary-400">
                     {result.prediction.performance_percentage}%
                   </span>
-                  <p className="text-xs text-slate-400 mt-1">Grade {result.prediction.letter_grade}</p>
+                  <p className="text-xs text-slate-400 mt-1">Standard Scale</p>
                 </div>
               </div>
 
-              {/* Progress bar visual */}
+              {/* Progress bar visual across 0–60 */}
               <div className="space-y-1.5">
                 <div className="flex justify-between text-[11px] text-slate-400 font-medium">
                   <span>0 Marks (F)</span>
@@ -397,96 +450,104 @@ export const PredictionPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Performance Explanation */}
+              {/* Plain-Language Interpretation */}
               <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 text-xs text-slate-300 leading-relaxed">
-                <p className="font-semibold text-white mb-1">Academic Projection Insight:</p>
+                <p className="font-semibold text-white mb-1">Plain-Language Summary:</p>
                 {result.prediction.category_description}
               </div>
 
-              {/* Rule-Based Academic Risk Section */}
-              <div className="border-t border-slate-800 pt-5 space-y-3">
+              {/* Risk Status Indicator */}
+              <div className="border-t border-slate-800 pt-4 space-y-2">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-bold text-white flex items-center space-x-1.5">
+                  <div className="flex items-center space-x-2">
                     {result.risk.risk_level === 'Low Risk' ? (
                       <ShieldCheck className="w-4 h-4 text-emerald-400" />
                     ) : (
                       <ShieldAlert className="w-4 h-4 text-rose-400" />
                     )}
-                    <span>Rule-Based Institutional Risk Assessment</span>
-                  </h4>
-                  <span className="text-xs text-slate-500">Advisory Guidelines</span>
-                </div>
-
-                <p className="text-xs text-slate-400 leading-relaxed">{result.risk.summary}</p>
-
-                {/* Triggered Factors List */}
-                {result.risk.triggered_factors.length > 0 ? (
-                  <div className="space-y-2 pt-1">
-                    <p className="text-xs font-semibold text-slate-300">Triggered Academic Flags:</p>
-                    {result.risk.triggered_factors.map((factor, idx) => (
-                      <div
-                        key={idx}
-                        className={`p-3 rounded-xl border text-xs ${
-                          factor.severity === 'CRITICAL'
-                            ? 'bg-rose-950/40 border-rose-800/80 text-rose-300'
-                            : 'bg-amber-950/40 border-amber-800/80 text-amber-300'
-                        }`}
-                      >
-                        <div className="flex items-center justify-between font-semibold">
-                          <span>{factor.factor}</span>
-                          <span className="px-1.5 py-0.5 rounded text-[10px] bg-slate-900 border border-slate-700 font-bold">
-                            {factor.severity}
-                          </span>
-                        </div>
-                        <p className="mt-1 text-slate-300 leading-normal">{factor.reason}</p>
-                      </div>
-                    ))}
+                    <span className="text-xs font-bold text-white">
+                      Risk Status: {result.risk.risk_level}
+                    </span>
                   </div>
-                ) : (
-                  <div className="p-3.5 rounded-xl bg-emerald-950/40 border border-emerald-800/80 text-emerald-300 text-xs flex items-center space-x-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                    <span>No risk triggers activated. Student is safely on track.</span>
-                  </div>
-                )}
-
-                {/* Recommended Interventions */}
-                <div className="space-y-1.5 pt-2">
-                  <p className="text-xs font-semibold text-slate-300">Recommended Next Steps:</p>
-                  <ul className="list-disc pl-4 space-y-1 text-xs text-slate-400">
-                    {result.risk.recommended_interventions.map((item, idx) => (
-                      <li key={idx}>{item}</li>
-                    ))}
-                  </ul>
+                  <RiskBadge
+                    level={result.risk.risk_level}
+                    flagsCount={result.risk.risk_flags_count}
+                    size="sm"
+                  />
                 </div>
+                <p className="text-xs text-slate-400">{result.risk.summary}</p>
+              </div>
+
+              {/* Quick Jump Action Cards for Feature Exploration */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => onNavigate('simulator')}
+                  className="p-3.5 rounded-xl bg-slate-950/80 border border-primary-900/60 hover:border-primary-600 text-left transition-all group cursor-pointer"
+                >
+                  <div className="flex items-center justify-between text-xs font-semibold text-primary-300">
+                    <span className="flex items-center space-x-1.5">
+                      <Sliders className="w-4 h-4 text-primary-400" />
+                      <span>What-If Simulator</span>
+                    </span>
+                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                  <p className="text-[11px] text-slate-400 mt-1">
+                    See how improving attendance or study time boosts your score.
+                  </p>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => onNavigate('explain')}
+                  className="p-3.5 rounded-xl bg-slate-950/80 border border-indigo-900/60 hover:border-indigo-600 text-left transition-all group cursor-pointer"
+                >
+                  <div className="flex items-center justify-between text-xs font-semibold text-indigo-300">
+                    <span className="flex items-center space-x-1.5">
+                      <Lightbulb className="w-4 h-4 text-indigo-400" />
+                      <span>Explain Prediction</span>
+                    </span>
+                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                  <p className="text-[11px] text-slate-400 mt-1">
+                    Understand the key factors that drove this score in plain English.
+                  </p>
+                </button>
               </div>
 
               {/* Disclaimer */}
               <div className="text-[11px] text-slate-500 border-t border-slate-800 pt-3 flex items-start space-x-1.5">
                 <HelpCircle className="w-3.5 h-3.5 flex-shrink-0 mt-0.5 text-slate-500" />
                 <span>
-                  Disclaimers: Predicted mark is a rescaled (0–60) statistical estimate based on the UCI Student Performance dataset.
-                  Letter grades (A–F) reflect project-defined provisional thresholds, not official UCI or institutional bylaws.
+                  Scale: 0–60 Marks (UCI Portuguese dataset benchmark). Letter grades reflect provisional academic thresholds (A: 54+, B: 48+, C: 36+, D: 30+, F: &lt;30).
                 </span>
               </div>
             </div>
           ) : (
-            <div className="bg-slate-900 rounded-2xl border border-dashed border-slate-800 p-12 text-center text-slate-500 space-y-3">
+            <div className="bg-slate-900 rounded-2xl border border-dashed border-slate-800 p-12 text-center text-slate-500 space-y-4 shadow-xl">
               <Calculator className="w-12 h-12 mx-auto text-slate-700 stroke-1" />
-              <h4 className="text-base font-semibold text-slate-300">Awaiting Student Data</h4>
-              <p className="text-xs max-w-sm mx-auto text-slate-500">
-                Adjust academic parameters on the left or select a viva demo preset,
-                then click "Execute Performance Assessment".
-              </p>
+              <div>
+                <h4 className="text-base font-semibold text-slate-300">Ready to Forecast</h4>
+                <p className="text-xs max-w-sm mx-auto text-slate-500 mt-1">
+                  Adjust student parameters on the left or click one of the sample profile buttons above, then click "Predict Final Grade".
+                </p>
+              </div>
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={() => applyPreset('average')}
+                  className="px-4 py-2 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all inline-flex items-center space-x-2"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-primary-400" />
+                  <span>Load Sample Profile</span>
+                </button>
+              </div>
             </div>
           )}
         </div>
       </div>
-
-      {/* Feature 1: What-If Academic Improvement Simulator */}
-      <WhatIfSimulator baselineInput={formData} />
-
-      {/* Feature 2: Explainable Prediction Breakdown */}
-      <ExplainableCard studentInput={formData} />
     </div>
   );
 };
+
+export default PredictionPage;
