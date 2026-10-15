@@ -173,9 +173,20 @@ def explain_decision_tree(
                     if passed_condition
                     else f"{raw_student_val:.1f} > {orig_threshold:.1f}"
                 )
+                if "scaled" in feat_name:
+                    unit_str = "marks"
+                elif feat_name == "absences":
+                    unit_str = "days absent"
+                elif feat_name == "studytime":
+                    unit_str = "study tier (1-4)"
+                elif feat_name == "failures":
+                    unit_str = "past failures"
+                else:
+                    unit_str = "units"
+
                 step_expl = (
                     f"Student's {FEATURE_LABELS.get(feat_name, feat_name)} of {raw_student_val:.1f} was "
-                    f"{'<=' if passed_condition else '>'} the split threshold of {orig_threshold:.1f} marks."
+                    f"{'<=' if passed_condition else '>'} the split threshold of {orig_threshold:.1f} {unit_str}."
                 )
             else:
                 orig_threshold = threshold

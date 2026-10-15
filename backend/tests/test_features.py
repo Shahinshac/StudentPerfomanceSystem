@@ -112,48 +112,71 @@ def test_linear_regression_exact_mathematical_attribution():
     Verifies that the sum of Linear Regression feature contributions + intercept
     mathematically reconstructs the pipeline prediction within floating point tolerance.
     """
-    expl = explain_prediction(
-        G1_scaled=36.0,
-        G2_scaled=42.0,
-        studytime=3,
-        failures=0,
-        absences=4,
-        schoolsup="no",
-    )
+    for g1, g2, fails, abs_days in [(36.0, 42.0, 0, 4), (58.0, 60.0, 0, 0), (0.0, 0.0, 3, 35)]:
+        expl = explain_prediction(
+            G1_scaled=g1,
+            G2_scaled=g2,
+            studytime=3,
+            failures=fails,
+            absences=abs_days,
+            schoolsup="no",
+        )
 
-    lr_data = expl["linear_regression"]
-    intercept = lr_data["baseline_cohort_marks"]
-    contributions = lr_data["feature_contributions"]
+        lr_data = expl["linear_regression"]
+        intercept = lr_data["baseline_cohort_marks"]
+        contributions = lr_data["feature_contributions"]
 
-    assert len(contributions) == 6
-    sum_contributions = sum(item["mark_contribution"] for item in contributions)
-    reconstructed_pred = round(intercept + sum_contributions, 2)
+        assert len(contributions) == 6
+        sum_contributions = sum(item["mark_contribution"] for item in contributions)
+        reconstructed_pred = round(intercept + sum_contributions, 2)
 
-    assert abs(reconstructed_pred - lr_data["raw_prediction"]) <= 0.05
-    assert lr_data["clamped_prediction"] <= 60.0
+        assert abs(reconstructed_pred - lr_data["raw_prediction"]) <= 0.05
+        assert 0.0 <= lr_data["clamped_prediction"] <= 60.0
+
+        for item in contributions:
+            assert "feature" in item
+            assert "raw_value" in item
+            assert "coefficient" in item
+            assert item["direction"] in ("POSITIVE", "NEGATIVE")
+            assert len(item["explanation"]) > 0
 
 
 def test_decision_tree_decision_path():
-    """Verifies that Decision Tree decision path correctly traces from root to leaf."""
-    expl = explain_prediction(
-        G1_scaled=45.0,
-        G2_scaled=48.0,
-        studytime=3,
-        failures=0,
-        absences=2,
-        schoolsup="no",
-    )
+    """Verifies that Decision Tree decision path correctly traces from root to leaf across score regimes."""
+    for g1, g2, fails, abs_days in [(45.0, 48.0, 0, 2), (15.0, 18.0, 2, 20), (0.0, 0.0, 3, 40)]:
+        expl = explain_prediction(
+            G1_scaled=g1,
+            G2_scaled=g2,
+            studytime=3,
+            failures=fails,
+            absences=abs_days,
+            schoolsup="no",
+        )
 
-    dt_data = expl["decision_tree"]
-    path = dt_data["decision_path"]
+        dt_data = expl["decision_tree"]
+        path = dt_data["decision_path"]
 
-    assert len(path) >= 2
-    # First step should not be a leaf
-    assert path[0]["is_leaf"] is False
-    # Last step must be a leaf
-    assert path[-1]["is_leaf"] is True
-    assert "subcohort_avg_marks" in path[-1]
-    assert 0.0 <= dt_data["predicted_marks"] <= 60.0
+        assert len(path) >= 2
+        # First step should not be a leaf
+        assert path[0]["is_leaf"] is False
+        # Last step must be a leaf
+        leaf = path[-1]
+        assert leaf["is_leaf"] is True
+        assert "subcohort_avg_marks" in leaf
+        assert leaf["subcohort_sample_size"] > 0
+        assert 0.0 <= dt_data["predicted_marks"] <= 60.0
+        # Terminal leaf mean should equal predicted marks within rounding
+        assert abs(leaf["subcohort_avg_marks"] - dt_data["predicted_marks"]) <= 0.05
+
+        # Split steps must have condition_met, threshold, and non-empty explanation
+        for step in path[:-1]:
+            assert not step["is_leaf"]
+            assert step["feature"] is not None
+            assert step["threshold"] is not None
+            assert step["student_value"] is not None
+            assert step["condition_met"] is not None
+            assert step["subcohort_sample_size"] > 0
+            assert any(unit in step["explanation"] for unit in ("marks", "days absent", "past failures", "study tier", "units", "split condition"))
 
 
 def test_api_simulate_endpoint():
