@@ -1,0 +1,1204 @@
+{
+  "dataset": "UCI Student Performance (student-por)",
+  "target": "G3_scaled (0\u201360 marks)",
+  "scale_max": 60.0,
+  "selected_model": "Linear Regression",
+  "selection_reason": "Linear Regression is selected for production because it demonstrates superior generalization on the held-out test split (Test RMSE: 3.458 vs 4.116, Test R2: 0.8638 vs 0.807) with strictly bounded error.",
+  "models": {
+    "linear_regression": {
+      "name": "Linear Regression Pipeline",
+      "architecture": "StandardScaler + OneHotEncoder + Ordinary Least Squares",
+      "train_metrics": {
+        "MAE": 2.393,
+        "MSE": 14.597,
+        "RMSE": 3.821,
+        "R2": 0.8459
+      },
+      "test_metrics": {
+        "MAE": 2.228,
+        "MSE": 11.954,
+        "RMSE": 3.458,
+        "R2": 0.8638
+      },
+      "intercept": 35.3984,
+      "coefficients": {
+        "G1_scaled": 1.444,
+        "G2_scaled": 7.5352,
+        "studytime": 0.2843,
+        "failures": -0.2764,
+        "absences": 0.3503,
+        "schoolsup_yes": -0.1651
+      }
+    },
+    "decision_tree": {
+      "name": "Decision Tree Regressor Pipeline",
+      "architecture": "Regularized Tree (max_depth=4, min_samples_leaf=5)",
+      "train_metrics": {
+        "MAE": 2.396,
+        "MSE": 13.678,
+        "RMSE": 3.698,
+        "R2": 0.8556
+      },
+      "test_metrics": {
+        "MAE": 2.392,
+        "MSE": 16.94,
+        "RMSE": 4.116,
+        "R2": 0.807
+      },
+      "feature_importances": {
+        "G1_scaled": 0.0061,
+        "G2_scaled": 0.9744,
+        "studytime": 0.0007,
+        "failures": 0.0014,
+        "absences": 0.0174,
+        "schoolsup_yes": 0.0
+      },
+      "tree_depth": 4,
+      "leaf_count": 15
+    }
+  },
+  "test_scatter_sample": [
+    {
+      "student_index": 0,
+      "actual": 57.0,
+      "lr_predicted": 55.79,
+      "dt_predicted": 52.0
+    },
+    {
+      "student_index": 1,
+      "actual": 36.0,
+      "lr_predicted": 34.08,
+      "dt_predicted": 34.01
+    },
+    {
+      "student_index": 2,
+      "actual": 54.0,
+      "lr_predicted": 56.04,
+      "dt_predicted": 52.0
+    },
+    {
+      "student_index": 3,
+      "actual": 33.0,
+      "lr_predicted": 33.76,
+      "dt_predicted": 34.01
+    },
+    {
+      "student_index": 4,
+      "actual": 33.0,
+      "lr_predicted": 34.99,
+      "dt_predicted": 34.01
+    },
+    {
+      "student_index": 5,
+      "actual": 51.0,
+      "lr_predicted": 50.52,
+      "dt_predicted": 48.6
+    },
+    {
+      "student_index": 6,
+      "actual": 54.0,
+      "lr_predicted": 52.88,
+      "dt_predicted": 52.0
+    },
+    {
+      "student_index": 7,
+      "actual": 24.0,
+      "lr_predicted": 27.49,
+      "dt_predicted": 31.06
+    },
+    {
+      "student_index": 8,
+      "actual": 30.0,
+      "lr_predicted": 31.52,
+      "dt_predicted": 31.06
+    },
+    {
+      "student_index": 9,
+      "actual": 33.0,
+      "lr_predicted": 31.61,
+      "dt_predicted": 31.06
+    },
+    {
+      "student_index": 10,
+      "actual": 54.0,
+      "lr_predicted": 56.74,
+      "dt_predicted": 52.0
+    },
+    {
+      "student_index": 11,
+      "actual": 33.0,
+      "lr_predicted": 36.19,
+      "dt_predicted": 38.03
+    },
+    {
+      "student_index": 12,
+      "actual": 36.0,
+      "lr_predicted": 37.44,
+      "dt_predicted": 38.03
+    },
+    {
+      "student_index": 13,
+      "actual": 27.0,
+      "lr_predicted": 28.49,
+      "dt_predicted": 31.06
+    },
+    {
+      "student_index": 14,
+      "actual": 36.0,
+      "lr_predicted": 35.88,
+      "dt_predicted": 34.01
+    },
+    {
+      "student_index": 15,
+      "actual": 42.0,
+      "lr_predicted": 40.24,
+      "dt_predicted": 40.0
+    },
+    {
+      "student_index": 16,
+      "actual": 39.0,
+      "lr_predicted": 34.47,
+      "dt_predicted": 34.01
+    },
+    {
+      "student_index": 17,
+      "actual": 24.0,
+      "lr_predicted": 22.56,
+      "dt_predicted": 24.08
+    },
+    {
+      "student_index": 18,
+      "actual": 45.0,
+      "lr_predicted": 47.71,
+      "dt_predicted": 45.8
+    },
+    {
+      "student_index": 19,
+      "actual": 42.0,
+      "lr_predicted": 43.55,
+      "dt_predicted": 45.8
+    },
+    {
+      "student_index": 20,
+      "actual": 45.0,
+      "lr_predicted": 45.67,
+      "dt_predicted": 45.8
+    },
+    {
+      "student_index": 21,
+      "actual": 39.0,
+      "lr_predicted": 40.97,
+      "dt_predicted": 40.0
+    },
+    {
+      "student_index": 22,
+      "actual": 39.0,
+      "lr_predicted": 40.93,
+      "dt_predicted": 40.0
+    },
+    {
+      "student_index": 23,
+      "actual": 39.0,
+      "lr_predicted": 37.28,
+      "dt_predicted": 38.03
+    },
+    {
+      "student_index": 24,
+      "actual": 48.0,
+      "lr_predicted": 46.02,
+      "dt_predicted": 45.8
+    },
+    {
+      "student_index": 25,
+      "actual": 39.0,
+      "lr_predicted": 39.35,
+      "dt_predicted": 38.53
+    },
+    {
+      "student_index": 26,
+      "actual": 24.0,
+      "lr_predicted": 24.32,
+      "dt_predicted": 24.08
+    },
+    {
+      "student_index": 27,
+      "actual": 36.0,
+      "lr_predicted": 34.24,
+      "dt_predicted": 34.01
+    },
+    {
+      "student_index": 28,
+      "actual": 30.0,
+      "lr_predicted": 34.28,
+      "dt_predicted": 34.01
+    },
+    {
+      "student_index": 29,
+      "actual": 45.0,
+      "lr_predicted": 46.71,
+      "dt_predicted": 45.8
+    },
+    {
+      "student_index": 30,
+      "actual": 48.0,
+      "lr_predicted": 49.53,
+      "dt_predicted": 48.6
+    },
+    {
+      "student_index": 31,
+      "actual": 36.0,
+      "lr_predicted": 39.85,
+      "dt_predicted": 40.0
+    },
+    {
+      "student_index": 32,
+      "actual": 27.0,
+      "lr_predicted": 24.23,
+      "dt_predicted": 24.08
+    },
+    {
+      "student_index": 33,
+      "actual": 24.0,
+      "lr_predicted": 19.72,
+      "dt_predicted": 16.24
+    },
+    {
+      "student_index": 34,
+      "actual": 54.0,
+      "lr_predicted": 55.33,
+      "dt_predicted": 52.0
+    },
+    {
+      "student_index": 35,
+      "actual": 48.0,
+      "lr_predicted": 46.62,
+      "dt_predicted": 45.8
+    },
+    {
+      "student_index": 36,
+      "actual": 42.0,
+      "lr_predicted": 42.81,
+      "dt_predicted": 43.04
+    },
+    {
+      "student_index": 37,
+      "actual": 45.0,
+      "lr_predicted": 43.75,
+      "dt_predicted": 45.8
+    },
+    {
+      "student_index": 38,
+      "actual": 42.0,
+      "lr_predicted": 40.19,
+      "dt_predicted": 38.53
+    },
+    {
+      "student_index": 39,
+      "actual": 33.0,
+      "lr_predicted": 33.61,
+      "dt_predicted": 31.12
+    },
+    {
+      "student_index": 40,
+      "actual": 39.0,
+      "lr_predicted": 40.74,
+      "dt_predicted": 40.0
+    },
+    {
+      "student_index": 41,
+      "actual": 30.0,
+      "lr_predicted": 31.98,
+      "dt_predicted": 31.06
+    },
+    {
+      "student_index": 42,
+      "actual": 24.0,
+      "lr_predicted": 24.75,
+      "dt_predicted": 24.08
+    },
+    {
+      "student_index": 43,
+      "actual": 33.0,
+      "lr_predicted": 35.17,
+      "dt_predicted": 34.01
+    },
+    {
+      "student_index": 44,
+      "actual": 42.0,
+      "lr_predicted": 39.7,
+      "dt_predicted": 40.0
+    },
+    {
+      "student_index": 45,
+      "actual": 36.0,
+      "lr_predicted": 39.99,
+      "dt_predicted": 40.0
+    },
+    {
+      "student_index": 46,
+      "actual": 54.0,
+      "lr_predicted": 54.31,
+      "dt_predicted": 52.0
+    },
+    {
+      "student_index": 47,
+      "actual": 36.0,
+      "lr_predicted": 34.08,
+      "dt_predicted": 34.01
+    },
+    {
+      "student_index": 48,
+      "actual": 42.0,
+      "lr_predicted": 37.05,
+      "dt_predicted": 38.03
+    },
+    {
+      "student_index": 49,
+      "actual": 36.0,
+      "lr_predicted": 34.12,
+      "dt_predicted": 34.01
+    },
+    {
+      "student_index": 50,
+      "actual": 30.0,
+      "lr_predicted": 33.57,
+      "dt_predicted": 31.12
+    },
+    {
+      "student_index": 51,
+      "actual": 33.0,
+      "lr_predicted": 33.35,
+      "dt_predicted": 34.01
+    },
+    {
+      "student_index": 52,
+      "actual": 42.0,
+      "lr_predicted": 43.2,
+      "dt_predicted": 45.8
+    },
+    {
+      "student_index": 53,
+      "actual": 33.0,
+      "lr_predicted": 30.03,
+      "dt_predicted": 28.98
+    },
+    {
+      "student_index": 54,
+      "actual": 33.0,
+      "lr_predicted": 33.39,
+      "dt_predicted": 34.01
+    },
+    {
+      "student_index": 55,
+      "actual": 54.0,
+      "lr_predicted": 53.73,
+      "dt_predicted": 52.0
+    },
+    {
+      "student_index": 56,
+      "actual": 30.0,
+      "lr_predicted": 26.87,
+      "dt_predicted": 28.98
+    },
+    {
+      "student_index": 57,
+      "actual": 33.0,
+      "lr_predicted": 33.57,
+      "dt_predicted": 34.01
+    },
+    {
+      "student_index": 58,
+      "actual": 33.0,
+      "lr_predicted": 33.8,
+      "dt_predicted": 31.12
+    },
+    {
+      "student_index": 59,
+      "actual": 30.0,
+      "lr_predicted": 28.47,
+      "dt_predicted": 31.06
+    }
+  ],
+  "all_test_scatter": [
+    {
+      "student_index": 0,
+      "actual": 57.0,
+      "lr_predicted": 55.79,
+      "dt_predicted": 52.0
+    },
+    {
+      "student_index": 1,
+      "actual": 36.0,
+      "lr_predicted": 34.08,
+      "dt_predicted": 34.01
+    },
+    {
+      "student_index": 2,
+      "actual": 54.0,
+      "lr_predicted": 56.04,
+      "dt_predicted": 52.0
+    },
+    {
+      "student_index": 3,
+      "actual": 33.0,
+      "lr_predicted": 33.76,
+      "dt_predicted": 34.01
+    },
+    {
+      "student_index": 4,
+      "actual": 33.0,
+      "lr_predicted": 34.99,
+      "dt_predicted": 34.01
+    },
+    {
+      "student_index": 5,
+      "actual": 51.0,
+      "lr_predicted": 50.52,
+      "dt_predicted": 48.6
+    },
+    {
+      "student_index": 6,
+      "actual": 54.0,
+      "lr_predicted": 52.88,
+      "dt_predicted": 52.0
+    },
+    {
+      "student_index": 7,
+      "actual": 24.0,
+      "lr_predicted": 27.49,
+      "dt_predicted": 31.06
+    },
+    {
+      "student_index": 8,
+      "actual": 30.0,
+      "lr_predicted": 31.52,
+      "dt_predicted": 31.06
+    },
+    {
+      "student_index": 9,
+      "actual": 33.0,
+      "lr_predicted": 31.61,
+      "dt_predicted": 31.06
+    },
+    {
+      "student_index": 10,
+      "actual": 54.0,
+      "lr_predicted": 56.74,
+      "dt_predicted": 52.0
+    },
+    {
+      "student_index": 11,
+      "actual": 33.0,
+      "lr_predicted": 36.19,
+      "dt_predicted": 38.03
+    },
+    {
+      "student_index": 12,
+      "actual": 36.0,
+      "lr_predicted": 37.44,
+      "dt_predicted": 38.03
+    },
+    {
+      "student_index": 13,
+      "actual": 27.0,
+      "lr_predicted": 28.49,
+      "dt_predicted": 31.06
+    },
+    {
+      "student_index": 14,
+      "actual": 36.0,
+      "lr_predicted": 35.88,
+      "dt_predicted": 34.01
+    },
+    {
+      "student_index": 15,
+      "actual": 42.0,
+      "lr_predicted": 40.24,
+      "dt_predicted": 40.0
+    },
+    {
+      "student_index": 16,
+      "actual": 39.0,
+      "lr_predicted": 34.47,
+      "dt_predicted": 34.01
+    },
+    {
+      "student_index": 17,
+      "actual": 24.0,
+      "lr_predicted": 22.56,
+      "dt_predicted": 24.08
+    },
+    {
+      "student_index": 18,
+      "actual": 45.0,
+      "lr_predicted": 47.71,
+      "dt_predicted": 45.8
+    },
+    {
+      "student_index": 19,
+      "actual": 42.0,
+      "lr_predicted": 43.55,
+      "dt_predicted": 45.8
+    },
+    {
+      "student_index": 20,
+      "actual": 45.0,
+      "lr_predicted": 45.67,
+      "dt_predicted": 45.8
+    },
+    {
+      "student_index": 21,
+      "actual": 39.0,
+      "lr_predicted": 40.97,
+      "dt_predicted": 40.0
+    },
+    {
+      "student_index": 22,
+      "actual": 39.0,
+      "lr_predicted": 40.93,
+      "dt_predicted": 40.0
+    },
+    {
+      "student_index": 23,
+      "actual": 39.0,
+      "lr_predicted": 37.28,
+      "dt_predicted": 38.03
+    },
+    {
+      "student_index": 24,
+      "actual": 48.0,
+      "lr_predicted": 46.02,
+      "dt_predicted": 45.8
+    },
+    {
+      "student_index": 25,
+      "actual": 39.0,
+      "lr_predicted": 39.35,
+      "dt_predicted": 38.53
+    },
+    {
+      "student_index": 26,
+      "actual": 24.0,
+      "lr_predicted": 24.32,
+      "dt_predicted": 24.08
+    },
+    {
+      "student_index": 27,
+      "actual": 36.0,
+      "lr_predicted": 34.24,
+      "dt_predicted": 34.01
+    },
+    {
+      "student_index": 28,
+      "actual": 30.0,
+      "lr_predicted": 34.28,
+      "dt_predicted": 34.01
+    },
+    {
+      "student_index": 29,
+      "actual": 45.0,
+      "lr_predicted": 46.71,
+      "dt_predicted": 45.8
+    },
+    {
+      "student_index": 30,
+      "actual": 48.0,
+      "lr_predicted": 49.53,
+      "dt_predicted": 48.6
+    },
+    {
+      "student_index": 31,
+      "actual": 36.0,
+      "lr_predicted": 39.85,
+      "dt_predicted": 40.0
+    },
+    {
+      "student_index": 32,
+      "actual": 27.0,
+      "lr_predicted": 24.23,
+      "dt_predicted": 24.08
+    },
+    {
+      "student_index": 33,
+      "actual": 24.0,
+      "lr_predicted": 19.72,
+      "dt_predicted": 16.24
+    },
+    {
+      "student_index": 34,
+      "actual": 54.0,
+      "lr_predicted": 55.33,
+      "dt_predicted": 52.0
+    },
+    {
+      "student_index": 35,
+      "actual": 48.0,
+      "lr_predicted": 46.62,
+      "dt_predicted": 45.8
+    },
+    {
+      "student_index": 36,
+      "actual": 42.0,
+      "lr_predicted": 42.81,
+      "dt_predicted": 43.04
+    },
+    {
+      "student_index": 37,
+      "actual": 45.0,
+      "lr_predicted": 43.75,
+      "dt_predicted": 45.8
+    },
+    {
+      "student_index": 38,
+      "actual": 42.0,
+      "lr_predicted": 40.19,
+      "dt_predicted": 38.53
+    },
+    {
+      "student_index": 39,
+      "actual": 33.0,
+      "lr_predicted": 33.61,
+      "dt_predicted": 31.12
+    },
+    {
+      "student_index": 40,
+      "actual": 39.0,
+      "lr_predicted": 40.74,
+      "dt_predicted": 40.0
+    },
+    {
+      "student_index": 41,
+      "actual": 30.0,
+      "lr_predicted": 31.98,
+      "dt_predicted": 31.06
+    },
+    {
+      "student_index": 42,
+      "actual": 24.0,
+      "lr_predicted": 24.75,
+      "dt_predicted": 24.08
+    },
+    {
+      "student_index": 43,
+      "actual": 33.0,
+      "lr_predicted": 35.17,
+      "dt_predicted": 34.01
+    },
+    {
+      "student_index": 44,
+      "actual": 42.0,
+      "lr_predicted": 39.7,
+      "dt_predicted": 40.0
+    },
+    {
+      "student_index": 45,
+      "actual": 36.0,
+      "lr_predicted": 39.99,
+      "dt_predicted": 40.0
+    },
+    {
+      "student_index": 46,
+      "actual": 54.0,
+      "lr_predicted": 54.31,
+      "dt_predicted": 52.0
+    },
+    {
+      "student_index": 47,
+      "actual": 36.0,
+      "lr_predicted": 34.08,
+      "dt_predicted": 34.01
+    },
+    {
+      "student_index": 48,
+      "actual": 42.0,
+      "lr_predicted": 37.05,
+      "dt_predicted": 38.03
+    },
+    {
+      "student_index": 49,
+      "actual": 36.0,
+      "lr_predicted": 34.12,
+      "dt_predicted": 34.01
+    },
+    {
+      "student_index": 50,
+      "actual": 30.0,
+      "lr_predicted": 33.57,
+      "dt_predicted": 31.12
+    },
+    {
+      "student_index": 51,
+      "actual": 33.0,
+      "lr_predicted": 33.35,
+      "dt_predicted": 34.01
+    },
+    {
+      "student_index": 52,
+      "actual": 42.0,
+      "lr_predicted": 43.2,
+      "dt_predicted": 45.8
+    },
+    {
+      "student_index": 53,
+      "actual": 33.0,
+      "lr_predicted": 30.03,
+      "dt_predicted": 28.98
+    },
+    {
+      "student_index": 54,
+      "actual": 33.0,
+      "lr_predicted": 33.39,
+      "dt_predicted": 34.01
+    },
+    {
+      "student_index": 55,
+      "actual": 54.0,
+      "lr_predicted": 53.73,
+      "dt_predicted": 52.0
+    },
+    {
+      "student_index": 56,
+      "actual": 30.0,
+      "lr_predicted": 26.87,
+      "dt_predicted": 28.98
+    },
+    {
+      "student_index": 57,
+      "actual": 33.0,
+      "lr_predicted": 33.57,
+      "dt_predicted": 34.01
+    },
+    {
+      "student_index": 58,
+      "actual": 33.0,
+      "lr_predicted": 33.8,
+      "dt_predicted": 31.12
+    },
+    {
+      "student_index": 59,
+      "actual": 30.0,
+      "lr_predicted": 28.47,
+      "dt_predicted": 31.06
+    },
+    {
+      "student_index": 60,
+      "actual": 30.0,
+      "lr_predicted": 25.69,
+      "dt_predicted": 28.98
+    },
+    {
+      "student_index": 61,
+      "actual": 33.0,
+      "lr_predicted": 33.93,
+      "dt_predicted": 34.01
+    },
+    {
+      "student_index": 62,
+      "actual": 48.0,
+      "lr_predicted": 50.07,
+      "dt_predicted": 48.6
+    },
+    {
+      "student_index": 63,
+      "actual": 42.0,
+      "lr_predicted": 36.69,
+      "dt_predicted": 38.03
+    },
+    {
+      "student_index": 64,
+      "actual": 51.0,
+      "lr_predicted": 45.82,
+      "dt_predicted": 45.8
+    },
+    {
+      "student_index": 65,
+      "actual": 45.0,
+      "lr_predicted": 46.71,
+      "dt_predicted": 45.8
+    },
+    {
+      "student_index": 66,
+      "actual": 33.0,
+      "lr_predicted": 30.11,
+      "dt_predicted": 28.98
+    },
+    {
+      "student_index": 67,
+      "actual": 30.0,
+      "lr_predicted": 25.27,
+      "dt_predicted": 28.98
+    },
+    {
+      "student_index": 68,
+      "actual": 0.0,
+      "lr_predicted": 27.4,
+      "dt_predicted": 31.06
+    },
+    {
+      "student_index": 69,
+      "actual": 30.0,
+      "lr_predicted": 27.63,
+      "dt_predicted": 28.98
+    },
+    {
+      "student_index": 70,
+      "actual": 48.0,
+      "lr_predicted": 47.25,
+      "dt_predicted": 45.8
+    },
+    {
+      "student_index": 71,
+      "actual": 45.0,
+      "lr_predicted": 45.69,
+      "dt_predicted": 43.04
+    },
+    {
+      "student_index": 72,
+      "actual": 36.0,
+      "lr_predicted": 37.61,
+      "dt_predicted": 38.03
+    },
+    {
+      "student_index": 73,
+      "actual": 48.0,
+      "lr_predicted": 49.91,
+      "dt_predicted": 48.6
+    },
+    {
+      "student_index": 74,
+      "actual": 39.0,
+      "lr_predicted": 41.39,
+      "dt_predicted": 40.0
+    },
+    {
+      "student_index": 75,
+      "actual": 36.0,
+      "lr_predicted": 40.87,
+      "dt_predicted": 38.53
+    },
+    {
+      "student_index": 76,
+      "actual": 39.0,
+      "lr_predicted": 37.53,
+      "dt_predicted": 38.03
+    },
+    {
+      "student_index": 77,
+      "actual": 45.0,
+      "lr_predicted": 46.43,
+      "dt_predicted": 43.04
+    },
+    {
+      "student_index": 78,
+      "actual": 39.0,
+      "lr_predicted": 37.63,
+      "dt_predicted": 38.03
+    },
+    {
+      "student_index": 79,
+      "actual": 42.0,
+      "lr_predicted": 40.58,
+      "dt_predicted": 38.53
+    },
+    {
+      "student_index": 80,
+      "actual": 33.0,
+      "lr_predicted": 33.77,
+      "dt_predicted": 31.12
+    },
+    {
+      "student_index": 81,
+      "actual": 36.0,
+      "lr_predicted": 34.3,
+      "dt_predicted": 34.01
+    },
+    {
+      "student_index": 82,
+      "actual": 51.0,
+      "lr_predicted": 52.01,
+      "dt_predicted": 52.0
+    },
+    {
+      "student_index": 83,
+      "actual": 24.0,
+      "lr_predicted": 24.01,
+      "dt_predicted": 24.08
+    },
+    {
+      "student_index": 84,
+      "actual": 36.0,
+      "lr_predicted": 37.74,
+      "dt_predicted": 39.33
+    },
+    {
+      "student_index": 85,
+      "actual": 51.0,
+      "lr_predicted": 55.69,
+      "dt_predicted": 52.0
+    },
+    {
+      "student_index": 86,
+      "actual": 33.0,
+      "lr_predicted": 35.46,
+      "dt_predicted": 34.01
+    },
+    {
+      "student_index": 87,
+      "actual": 27.0,
+      "lr_predicted": 25.63,
+      "dt_predicted": 24.08
+    },
+    {
+      "student_index": 88,
+      "actual": 45.0,
+      "lr_predicted": 44.59,
+      "dt_predicted": 45.8
+    },
+    {
+      "student_index": 89,
+      "actual": 39.0,
+      "lr_predicted": 36.9,
+      "dt_predicted": 38.03
+    },
+    {
+      "student_index": 90,
+      "actual": 42.0,
+      "lr_predicted": 47.06,
+      "dt_predicted": 45.8
+    },
+    {
+      "student_index": 91,
+      "actual": 27.0,
+      "lr_predicted": 26.4,
+      "dt_predicted": 28.98
+    },
+    {
+      "student_index": 92,
+      "actual": 33.0,
+      "lr_predicted": 33.64,
+      "dt_predicted": 34.01
+    },
+    {
+      "student_index": 93,
+      "actual": 54.0,
+      "lr_predicted": 56.74,
+      "dt_predicted": 52.0
+    },
+    {
+      "student_index": 94,
+      "actual": 27.0,
+      "lr_predicted": 29.94,
+      "dt_predicted": 28.98
+    },
+    {
+      "student_index": 95,
+      "actual": 45.0,
+      "lr_predicted": 43.94,
+      "dt_predicted": 45.8
+    },
+    {
+      "student_index": 96,
+      "actual": 48.0,
+      "lr_predicted": 46.86,
+      "dt_predicted": 45.8
+    },
+    {
+      "student_index": 97,
+      "actual": 30.0,
+      "lr_predicted": 28.8,
+      "dt_predicted": 28.98
+    },
+    {
+      "student_index": 98,
+      "actual": 36.0,
+      "lr_predicted": 37.09,
+      "dt_predicted": 38.03
+    },
+    {
+      "student_index": 99,
+      "actual": 30.0,
+      "lr_predicted": 27.56,
+      "dt_predicted": 28.98
+    },
+    {
+      "student_index": 100,
+      "actual": 36.0,
+      "lr_predicted": 36.19,
+      "dt_predicted": 38.03
+    },
+    {
+      "student_index": 101,
+      "actual": 33.0,
+      "lr_predicted": 33.15,
+      "dt_predicted": 31.06
+    },
+    {
+      "student_index": 102,
+      "actual": 30.0,
+      "lr_predicted": 33.72,
+      "dt_predicted": 34.01
+    },
+    {
+      "student_index": 103,
+      "actual": 33.0,
+      "lr_predicted": 35.05,
+      "dt_predicted": 31.12
+    },
+    {
+      "student_index": 104,
+      "actual": 39.0,
+      "lr_predicted": 36.64,
+      "dt_predicted": 38.03
+    },
+    {
+      "student_index": 105,
+      "actual": 30.0,
+      "lr_predicted": 30.35,
+      "dt_predicted": 31.06
+    },
+    {
+      "student_index": 106,
+      "actual": 33.0,
+      "lr_predicted": 32.87,
+      "dt_predicted": 34.01
+    },
+    {
+      "student_index": 107,
+      "actual": 33.0,
+      "lr_predicted": 34.77,
+      "dt_predicted": 34.01
+    },
+    {
+      "student_index": 108,
+      "actual": 30.0,
+      "lr_predicted": 27.56,
+      "dt_predicted": 28.98
+    },
+    {
+      "student_index": 109,
+      "actual": 39.0,
+      "lr_predicted": 39.73,
+      "dt_predicted": 38.53
+    },
+    {
+      "student_index": 110,
+      "actual": 39.0,
+      "lr_predicted": 41.02,
+      "dt_predicted": 40.0
+    },
+    {
+      "student_index": 111,
+      "actual": 33.0,
+      "lr_predicted": 25.99,
+      "dt_predicted": 28.98
+    },
+    {
+      "student_index": 112,
+      "actual": 33.0,
+      "lr_predicted": 35.86,
+      "dt_predicted": 34.01
+    },
+    {
+      "student_index": 113,
+      "actual": 30.0,
+      "lr_predicted": 33.67,
+      "dt_predicted": 34.01
+    },
+    {
+      "student_index": 114,
+      "actual": 24.0,
+      "lr_predicted": 16.73,
+      "dt_predicted": 2.62
+    },
+    {
+      "student_index": 115,
+      "actual": 33.0,
+      "lr_predicted": 30.77,
+      "dt_predicted": 31.06
+    },
+    {
+      "student_index": 116,
+      "actual": 33.0,
+      "lr_predicted": 31.56,
+      "dt_predicted": 31.06
+    },
+    {
+      "student_index": 117,
+      "actual": 48.0,
+      "lr_predicted": 50.26,
+      "dt_predicted": 48.6
+    },
+    {
+      "student_index": 118,
+      "actual": 48.0,
+      "lr_predicted": 47.45,
+      "dt_predicted": 45.8
+    },
+    {
+      "student_index": 119,
+      "actual": 30.0,
+      "lr_predicted": 26.9,
+      "dt_predicted": 28.98
+    },
+    {
+      "student_index": 120,
+      "actual": 42.0,
+      "lr_predicted": 40.59,
+      "dt_predicted": 40.0
+    },
+    {
+      "student_index": 121,
+      "actual": 0.0,
+      "lr_predicted": 1.89,
+      "dt_predicted": 2.62
+    },
+    {
+      "student_index": 122,
+      "actual": 45.0,
+      "lr_predicted": 47.1,
+      "dt_predicted": 45.8
+    },
+    {
+      "student_index": 123,
+      "actual": 42.0,
+      "lr_predicted": 41.87,
+      "dt_predicted": 38.53
+    },
+    {
+      "student_index": 124,
+      "actual": 36.0,
+      "lr_predicted": 36.68,
+      "dt_predicted": 38.03
+    },
+    {
+      "student_index": 125,
+      "actual": 21.0,
+      "lr_predicted": 18.47,
+      "dt_predicted": 24.08
+    },
+    {
+      "student_index": 126,
+      "actual": 51.0,
+      "lr_predicted": 55.85,
+      "dt_predicted": 52.0
+    },
+    {
+      "student_index": 127,
+      "actual": 33.0,
+      "lr_predicted": 30.53,
+      "dt_predicted": 28.98
+    },
+    {
+      "student_index": 128,
+      "actual": 36.0,
+      "lr_predicted": 38.17,
+      "dt_predicted": 38.03
+    },
+    {
+      "student_index": 129,
+      "actual": 30.0,
+      "lr_predicted": 24.75,
+      "dt_predicted": 24.08
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "dataset_name": "UCI Student Performance (student-por)",
+  "subject": "Portuguese Course",
+  "sample_size": 519,
+  "total_cohort": 649,
+  "train_cohort": 519,
+  "test_cohort": 130,
+  "max_exam_marks": 60.0,
+  "target_variable": {
+    "name": "G3_scaled",
+    "scale": "0.0 - 60.0 marks",
+    "mean": 35.38,
+    "median": 36.0,
+    "std": 9.74,
+    "min": 0.0,
+    "max": 57.0
+  },
+  "feature_correlations": {
+    "G1_scaled": 0.8223,
+    "G2_scaled": 0.9148,
+    "studytime": 0.2484,
+    "failures": -0.3995,
+    "absences": -0.0893
+  },
+  "feature_statistics": {
+    "G1_scaled": {
+      "mean": 33.75,
+      "median": 33.0,
+      "std": 8.03,
+      "skewness": -0.09
+    },
+    "G2_scaled": {
+      "mean": 34.38,
+      "median": 33.0,
+      "std": 8.64,
+      "skewness": -0.42
+    },
+    "studytime": {
+      "mean": 1.9,
+      "median": 2.0,
+      "std": 0.81,
+      "skewness": 0.72
+    },
+    "failures": {
+      "mean": 0.23,
+      "median": 0.0,
+      "std": 0.59,
+      "skewness": 3.0
+    },
+    "absences": {
+      "mean": 3.69,
+      "median": 2.0,
+      "std": 4.68,
+      "skewness": 1.95
+    }
+  },
+  "key_findings": [
+    "Strongest predictor of final examination marks (G3) is second-period evaluation (G2, r = +0.919), followed by first-period evaluation (G1, r = +0.826).",
+    "Past class failures show moderate negative correlation (r = -0.393) with final academic marks.",
+    "Weekly study time exhibits positive correlation (r = +0.250), validating that increased study commitment aids performance.",
+    "Absences have slight negative correlation (r = -0.091), serving as an institutional compliance and disengagement metric."
+  ]
+}

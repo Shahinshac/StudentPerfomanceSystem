@@ -1,0 +1,73 @@
+{
+  "dataset_name": "UCI Student Performance Dataset (student-por)",
+  "source": "UCI Machine Learning Repository (Cortez and Silva, 2008)",
+  "subject": "Portuguese Language Course",
+  "total_records": 649,
+  "train_records": 519,
+  "test_records": 130,
+  "max_exam_marks": 60.0,
+  "features": {
+    "G1_scaled": {
+      "type": "numerical",
+      "scale": "0.0 - 60.0 marks",
+      "description": "First-period evaluation score (original G1 x 3)",
+      "mean": 33.75,
+      "std": 8.03,
+      "min": 0.0,
+      "max": 54.0
+    },
+    "G2_scaled": {
+      "type": "numerical",
+      "scale": "0.0 - 60.0 marks",
+      "description": "Second-period evaluation score (original G2 x 3)",
+      "mean": 34.38,
+      "std": 8.64,
+      "min": 0.0,
+      "max": 57.0
+    },
+    "studytime": {
+      "type": "ordinal",
+      "scale": "1 - 4",
+      "description": "Weekly study time (1: <2h, 2: 2-5h, 3: 5-10h, 4: >10h)",
+      "mean": 1.9,
+      "std": 0.81,
+      "min": 1,
+      "max": 4
+    },
+    "failures": {
+      "type": "discrete",
+      "scale": "0 - 3",
+      "description": "Number of past class failures (0: none, 1, 2, 3: 3+)",
+      "mean": 0.23,
+      "std": 0.59,
+      "min": 0,
+      "max": 3
+    },
+    "absences": {
+      "type": "numerical",
+      "scale": "0 - 32",
+      "description": "Number of school absences",
+      "mean": 3.69,
+      "std": 4.68,
+      "min": 0,
+      "max": 32
+    },
+    "schoolsup": {
+      "type": "categorical",
+      "scale": "no, yes",
+      "description": "Extra educational school support",
+      "yes_count": 53,
+      "no_count": 466
+    }
+  },
+  "target": {
+    "name": "G3_scaled",
+    "scale": "0.0 - 60.0 marks",
+    "description": "Final examination grade (original G3 x 3)",
+    "mean": 35.38,
+    "std": 9.74,
+    "min": 0.0,
+    "max": 57.0
+  },
+  "leakage_prevention": "G3_scaled was isolated strictly as the prediction target and never passed into training features. Data was split reproducibly with random_state=42 before any preprocessing was fitted."
+}
