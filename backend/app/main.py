@@ -6,6 +6,7 @@ Exposes RESTful endpoints for ML inference on 0–60 marks scale, provisional le
 institutional rule-based risk analysis, dataset insights, What-If Simulator, and Explainable AI.
 """
 
+import os
 import json
 from pathlib import Path
 from typing import Any, Dict
